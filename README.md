@@ -23,6 +23,7 @@ Hypeculator is a fast, native desktop calculator for Linux. It uses Python and P
 
 ```zsh
 git clone git@github.com:oxyth8/hypeculator.git
+# or git clone https://github.com/oxyth8/hypeculator.git
 cd hypeculator
 python -m venv .venv
 .venv/bin/python -m pip install -e .
