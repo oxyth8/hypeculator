@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Hypeculator
+GenericName=Calculator
+Comment=Fast and reliable desktop calculator
+Exec=hypeculator
+Icon=hypeculator
+Terminal=false
+Categories=Utility;Calculator;
+Keywords=hypeculator;calculator;math;
+StartupWMClass=hypeculator
+StartupNotify=true

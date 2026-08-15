@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hypeculator"
+version = "1.0.0"
+description = "Fast and reliable desktop calculator for Arch Linux and Wayland."
+requires-python = ">=3.11"
+dependencies = ["PySide6"]
+license = "MIT"
+
+[project.scripts]
+hypeculator = "calculator.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.data-files]
+"share/applications" = ["packaging/linux/hypeculator.desktop"]
+"share/icons/hicolor/512x512/apps" = ["assets/logo/hypeculator.png"]

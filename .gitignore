@@ -1,0 +1,22 @@
+# AIOS private project memory
+.aios/
+
+# Virtual environment
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Build
+build/
+dist/
+
+# Test/cache output
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary archives
+*.zip

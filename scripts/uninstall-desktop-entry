@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+
+data_home=${XDG_DATA_HOME:-"$HOME/.local/share"}
+project_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+desktop_dir="$data_home/applications"
+desktop_file="$desktop_dir/hypeculator.desktop"
+legacy_file="$desktop_dir/calculator.desktop"
+icon_file="$data_home/icons/hicolor/512x512/apps/hypeculator.png"
+terminal_launcher="$HOME/.local/bin/hypeculator"
+project_launcher="$project_dir/.venv/bin/hypeculator"
+
+rm -f "$desktop_file"
+if [ -f "$legacy_file" ] && grep -Fq "$project_dir" "$legacy_file"; then
+    rm -f "$legacy_file"
+fi
+rm -f "$icon_file"
+if [ -L "$terminal_launcher" ] && [ "$(readlink "$terminal_launcher")" = "$project_launcher" ]; then
+    rm -f "$terminal_launcher"
+fi
+echo "Removed desktop entry: $desktop_file"

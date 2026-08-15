@@ -1,0 +1,65 @@
+#!/bin/sh
+set -eu
+
+project_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+launcher="$project_dir/.venv/bin/hypeculator"
+icon="$project_dir/assets/logo/hypeculator.png"
+user_bin="$HOME/.local/bin"
+terminal_launcher="$user_bin/hypeculator"
+data_home=${XDG_DATA_HOME:-"$HOME/.local/share"}
+desktop_dir="$data_home/applications"
+icon_dir="$data_home/icons/hicolor/512x512/apps"
+desktop_file="$desktop_dir/hypeculator.desktop"
+legacy_file="$desktop_dir/calculator.desktop"
+
+if [ ! -x "$launcher" ]; then
+    echo "Hypeculator launcher was not found at: $launcher" >&2
+    echo "Create the project virtual environment before installing the desktop entry." >&2
+    exit 1
+fi
+
+if [ ! -f "$icon" ]; then
+    echo "Hypeculator icon was not found at: $icon" >&2
+    exit 1
+fi
+
+if [ -e "$terminal_launcher" ] || [ -L "$terminal_launcher" ]; then
+    if [ ! -L "$terminal_launcher" ] || [ "$(readlink "$terminal_launcher")" != "$launcher" ]; then
+        echo "Refusing to replace an unrelated terminal launcher: $terminal_launcher" >&2
+        exit 1
+    fi
+fi
+
+escaped_launcher=$(printf '%s' "$launcher" | sed -e 's/%/%%/g' -e 's/[\\"]/\\&/g')
+escaped_terminal_launcher=$(printf '%s' "$terminal_launcher" | sed -e 's/%/%%/g' -e 's/[\\"]/\\&/g')
+
+mkdir -p "$desktop_dir" "$icon_dir" "$user_bin"
+ln -sfn "$launcher" "$terminal_launcher"
+cp "$icon" "$icon_dir/hypeculator.png"
+cat > "$desktop_file" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Hypeculator
+GenericName=Calculator
+Comment=Fast and reliable desktop calculator
+Exec="$escaped_terminal_launcher"
+Icon=hypeculator
+Terminal=false
+Categories=Utility;Calculator;
+Keywords=hypeculator;calculator;math;
+StartupWMClass=hypeculator
+StartupNotify=true
+EOF
+
+if [ -f "$legacy_file" ] && grep -Fq "$project_dir" "$legacy_file"; then
+    rm -f "$legacy_file"
+fi
+
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database "$desktop_dir" || true
+fi
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    gtk-update-icon-cache --force "$data_home/icons/hicolor" || true
+fi
+
+echo "Installed desktop entry: $desktop_file"
