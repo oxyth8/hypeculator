@@ -1,0 +1,49 @@
+pkgname=hypeculator
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Fast and reliable desktop calculator for Linux"
+arch=('any')
+url="https://github.com/oxyth8/hypeculator"
+license=('MIT')
+
+depends=(
+  'python'
+  'pyside6'
+)
+
+makedepends=(
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+
+source=(
+  "$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
+)
+
+sha256sums=('c1f0f8a8a9a7213facf088c79b06d60397396ccbad68070afe2b433c509c3a86')
+
+build() {
+  cd "$pkgname-$pkgver"
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+
+  PYTHONPATH="$PWD/src" QT_QPA_PLATFORM=offscreen \
+    python -m unittest discover -s tests -p 'test_engine.py' -v
+
+  PYTHONPATH="$PWD/src" QT_QPA_PLATFORM=offscreen \
+    python -m unittest discover -s tests -p 'test_ui.py' -v
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
